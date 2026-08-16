@@ -1,3 +1,4 @@
+import time
 import pytest
 from fastapi.testclient import TestClient
 from backend.app.main import app
@@ -22,7 +23,7 @@ def test_dashboard_summary():
 
 def test_student_registration_and_list():
     with TestClient(app) as client:
-        test_enrollment = "99999"
+        test_enrollment = f"t_{int(time.time())}"
         test_name = "PyTest Student"
         
         # 1. Register student
@@ -46,7 +47,7 @@ def test_student_registration_and_list():
 
 def test_attendance_mark_and_deduplication():
     with TestClient(app) as client:
-        test_enrollment = "88888"
+        test_enrollment = f"d_{int(time.time())}"
         test_name = "Deduplication Test Student"
         test_subject = "PyTest Subject"
         

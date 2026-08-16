@@ -11,9 +11,21 @@ class TTSService:
 
         def run_tts(msg):
             try:
+                try:
+                    import pythoncom
+                    pythoncom.CoInitialize()
+                except Exception:
+                    pass
+
                 engine = pyttsx3.init()
                 engine.say(msg)
                 engine.runAndWait()
+
+                try:
+                    import pythoncom
+                    pythoncom.CoUninitialize()
+                except Exception:
+                    pass
             except Exception as e:
                 print(f"[TTSService] Speech error: {e}")
 
