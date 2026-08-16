@@ -2,6 +2,8 @@ import threading
 import pyttsx3
 from backend.app.db.database import get_setting
 
+_speech_lock = threading.Lock()
+
 class TTSService:
     @staticmethod
     def speak(text: str):
@@ -10,6 +12,9 @@ class TTSService:
             return
 
         def run_tts(msg):
+            if not _speech_lock.acquire(blocking=False):
+                # If speech is already playing, skip to prevent pyttsx3 loop collisions
+                return
             try:
                 try:
                     import pythoncom
@@ -26,10 +31,11 @@ class TTSService:
                     pythoncom.CoUninitialize()
                 except Exception:
                     pass
-            except Exception as e:
-                print(f"[TTSService] Speech error: {e}")
+            except Exception:
+                pass
+            finally:
+                _speech_lock.release()
 
-        # Run in separate thread to prevent blocking main API event loop
         threading.Thread(target=run_tts, args=(text,), daemon=True).start()
 
 tts_service = TTSService()
